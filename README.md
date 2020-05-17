@@ -1,6 +1,6 @@
 # Contact List - Deno
 
-> This is a contact list app built with denojs, vuejs & mongodb.
+> This is a contact list app built with denojs, servestjs, vuejs & mongodb.
 
 ## Features
 
@@ -27,10 +27,6 @@ Though the diagram uses sql data type, this diagram is to show you the various c
 
 Install deno [installation](https://deno.land/manual/getting_started/installation)
 
-```console
-npm install
-```
-
 Install denon it's like nodemon
 
 ```console
@@ -42,6 +38,10 @@ deno install -Af --unstable https://deno.land/x/denon/denon.ts
 ```console
 denon app.ts
 ```
+
+## Check more on servestjs
+
+[Documentation](https://servestjs.org/)
 
 ## License
 
