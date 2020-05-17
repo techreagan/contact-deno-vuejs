@@ -6,15 +6,21 @@ import {
 import {
   getContacts,
   getContact,
-  createContact
+  createContact,
+  updateContact,
+  deleteContact
 } from '../controllers/contacts.ts'
 
 const router = createRouter()
 
 router.get('/', getContacts)
 
-router.get('/:id', getContact)
+router.post('/single', getContact)
 
 router.post('/', contentTypeFilter('application/json'), createContact)
+
+router.put('/', contentTypeFilter('application/json'), updateContact)
+
+router.post('/delete', contentTypeFilter('application/json'), deleteContact)
 
 export default router
