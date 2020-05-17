@@ -72,7 +72,7 @@ const updateContact = async (req: any) => {
   await Contact.updateOne(
     { _id: updateId },
     {
-      $set: { firstName, lastName, phoneNumber }
+      $set: { firstName, lastName, phoneNumber, updatedAt: new Date() }
     }
   )
 
@@ -97,7 +97,11 @@ const createContact = async (req: any) => {
     phoneNumber: number
   }
 
-  let contact = await Contact.insertOne(data)
+  let contact = await Contact.insertOne({
+    ...data,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  })
 
   contact = await Contact.findOne({ _id: contact })
 
