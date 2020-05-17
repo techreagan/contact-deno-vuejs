@@ -16,7 +16,7 @@ Extensive and testing documentation with postman: [Contact list API](https://doc
 
 Though the diagram uses sql data type, this diagram is to show you the various collections in the mongo database.
 
-![Screenshot](public/contact-ERD.jpg)
+![Screenshot](server/public/contact-ERD.jpg)
 
 ## Requirement
 
