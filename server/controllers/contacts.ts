@@ -4,18 +4,6 @@ import Contact from '../models/Contact.ts'
 // @route   GET /api/v1/contacts
 // @access  Public
 const getContacts = async (req: any) => {
-  // const contacts = [
-  //   {
-  //     firstName: 'tech',
-  //     lastName: 'reagan',
-  //     phoneNumber: 123456
-  //   },
-  //   {
-  //     firstName: 'john',
-  //     lastName: 'doe',
-  //     phoneNumber: 123456
-  //   }
-  // ]
   const contacts = await Contact.find()
   await req.respond({
     status: 200,
