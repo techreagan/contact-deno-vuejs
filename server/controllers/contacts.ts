@@ -15,26 +15,26 @@ const getContacts = async (req: any) => {
 }
 
 // @desc    Get contacts
-// @route   POST /api/v1/contacts/single
+// @route   GET /api/v1/contacts/:id
 // @access  Public
 const getContact = async (req: any) => {
-  const { id } = (await req.json()) as {
-    id: string
-  }
+  const [_, id] = req.match
 
-  if (!id) {
+  const contact = await Contact.findOne({ _id: { $oid: id } })
+
+  if (!contact) {
     return await req.respond({
       status: 400,
       headers: new Headers({
         'content-type': 'application/json'
       }),
-      body: JSON.stringify({ success: false, data: 'The field id is required' })
+      body: JSON.stringify({
+        success: false,
+        data: `No contact with id of ${id}`
+      })
     })
   }
 
-  const newId = { $oid: id }
-
-  const contact = await Contact.findOne({ _id: newId })
   await req.respond({
     status: 200,
     headers: new Headers({
@@ -45,11 +45,11 @@ const getContact = async (req: any) => {
 }
 
 // @desc    Update contacts
-// @route   PUT /api/v1/contacts
+// @route   PUT /api/v1/contacts/:id
 // @access  Public
 const updateContact = async (req: any) => {
-  let { id, firstName, lastName, phoneNumber } = (await req.json()) as {
-    id: string
+  const [_, id] = req.match
+  let { firstName, lastName, phoneNumber } = (await req.json()) as {
     firstName: string
     lastName: string
     phoneNumber: number
@@ -103,12 +103,10 @@ const createContact = async (req: any) => {
 }
 
 // @desc    Delete contacts
-// @route   DELETE /api/v1/contacts
+// @route   DELETE /api/v1/contacts/:id
 // @access  Public
 const deleteContact = async (req: any) => {
-  const { id } = (await req.json()) as {
-    id: string
-  }
+  const [_, id] = req.match
 
   let contact = await Contact.findOne({ _id: { $oid: id } })
 

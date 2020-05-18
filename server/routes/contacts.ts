@@ -1,6 +1,7 @@
 import {
   createRouter,
-  contentTypeFilter
+  contentTypeFilter,
+  RoutingError
 } from 'https://servestjs.org/@v1.0.0/mod.ts'
 
 import {
@@ -15,12 +16,20 @@ const router = createRouter()
 
 router.get('/', getContacts)
 
-router.post('/single', getContact)
+router.get(new RegExp('/(.{24})'), getContact)
 
 router.post('/', contentTypeFilter('application/json'), createContact)
 
-router.put('/', contentTypeFilter('application/json'), updateContact)
+router.put(
+  new RegExp('/(.{24})'),
+  contentTypeFilter('application/json'),
+  updateContact
+)
 
-router.post('/delete', contentTypeFilter('application/json'), deleteContact)
+router.delete(
+  new RegExp('/(.{24})'),
+  contentTypeFilter('application/json'),
+  deleteContact
+)
 
 export default router
