@@ -3,87 +3,95 @@ import Contact from '../models/Contact.ts'
 // @desc    Get contacts
 // @route   GET /api/v1/contacts
 // @access  Public
-const getContacts = async (req: any) => {
+const getContacts = async ({ response }: { response: any }) => {
   const contacts = await Contact.find()
-  await req.respond({
-    status: 200,
-    headers: new Headers({
-      'content-type': 'application/json'
-    }),
-    body: JSON.stringify({ success: true, data: contacts })
-  })
+  response.body = { success: true, data: contacts }
 }
 
 // @desc    Get contacts
 // @route   GET /api/v1/contacts/:id
 // @access  Public
-const getContact = async (req: any) => {
-  const [_, id] = req.match
+const getContact = async ({
+  params,
+  response
+}: {
+  params: { id: string }
+  response: any
+}) => {
+  const id = params.id
+  if (!id) {
+    response.status = 400
+    response.body = { success: false, error: 'Id params is required' }
+  }
 
   const contact = await Contact.findOne({ _id: { $oid: id } })
 
   if (!contact) {
-    return await req.respond({
-      status: 400,
-      headers: new Headers({
-        'content-type': 'application/json'
-      }),
-      body: JSON.stringify({
-        success: false,
-        data: `No contact with id of ${id}`
-      })
-    })
+    response.status = 404
+    response.body = {
+      success: false,
+      error: `No contact with id of ${id}`
+    }
+    return
   }
 
-  await req.respond({
-    status: 200,
-    headers: new Headers({
-      'content-type': 'application/json'
-    }),
-    body: JSON.stringify({ success: true, data: contact })
-  })
+  response.body = JSON.stringify({ success: true, data: contact })
 }
 
 // @desc    Update contacts
 // @route   PUT /api/v1/contacts/:id
 // @access  Public
-const updateContact = async (req: any) => {
-  const [_, id] = req.match
-  let { firstName, lastName, phoneNumber } = (await req.json()) as {
-    firstName: string
-    lastName: string
-    phoneNumber: number
+const updateContact = async ({
+  params,
+  request,
+  response
+}: {
+  params: { id: string }
+  request: any
+  response: any
+}) => {
+  const body = await request.body()
+  const {
+    firstName,
+    lastName,
+    phoneNumber
+  }: { firstName: string; lastName: string; phoneNumber: number } = body.value
+
+  const id = params.id
+
+  const contact = await Contact.findOne({ _id: { $oid: id } })
+
+  if (!contact) {
+    response.status = 404
+    response.body = {
+      success: false,
+      error: `No contact with id of ${id}`
+    }
+    return
   }
 
-  const updateId = { $oid: id }
-
   await Contact.updateOne(
-    { _id: updateId },
+    { _id: { $oid: id } },
     {
       $set: { firstName, lastName, phoneNumber, updatedAt: new Date() }
     }
   )
 
-  const contact = await Contact.findOne({ _id: updateId })
-
-  await req.respond({
-    status: 200,
-    headers: new Headers({
-      'content-type': 'application/json'
-    }),
-    body: JSON.stringify({ success: true, data: contact })
-  })
+  response.body = { success: true, data: contact }
 }
 
 // @desc    Create contacts
 // @route   POST /api/v1/contacts
 // @access  Public
-const createContact = async (req: any) => {
-  const data = (await req.json()) as {
-    firstName: string
-    lastName: string
-    phoneNumber: number
-  }
+const createContact = async ({
+  request,
+  response
+}: {
+  request: any
+  response: any
+}) => {
+  const body = await request.body()
+  const data = body.value
 
   let contact = await Contact.insertOne({
     ...data,
@@ -93,45 +101,35 @@ const createContact = async (req: any) => {
 
   contact = await Contact.findOne({ _id: contact })
 
-  await req.respond({
-    status: 200,
-    headers: new Headers({
-      'content-type': 'application/json'
-    }),
-    body: JSON.stringify({ success: true, data: contact })
-  })
+  response.body = { success: true, data: contact }
 }
 
 // @desc    Delete contacts
 // @route   DELETE /api/v1/contacts/:id
 // @access  Public
-const deleteContact = async (req: any) => {
-  const [_, id] = req.match
+const deleteContact = async ({
+  params,
+  response
+}: {
+  params: { id: string }
+  response: any
+}) => {
+  const id = params.id
 
   let contact = await Contact.findOne({ _id: { $oid: id } })
 
   if (!contact) {
-    return await req.respond({
-      status: 404,
-      headers: new Headers({
-        'content-type': 'application/json'
-      }),
-      body: JSON.stringify({
-        success: false,
-        data: `No contact with id of ${id}`
-      })
-    })
+    response.status = 404
+    response.body = {
+      success: false,
+      error: `No contact with id of ${id}`
+    }
+    return
   }
 
   await Contact.deleteOne({ _id: { $oid: id } })
 
-  await req.respond({
-    status: 200,
-    headers: new Headers({
-      'content-type': 'application/json'
-    }),
-    body: JSON.stringify({ success: true, data: contact })
-  })
+  response.body = { success: true, data: contact }
 }
 
 export { getContacts, getContact, createContact, updateContact, deleteContact }

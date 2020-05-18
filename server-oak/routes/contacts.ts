@@ -1,8 +1,4 @@
-import {
-  createRouter,
-  contentTypeFilter,
-  RoutingError
-} from 'https://servestjs.org/@v1.0.0/mod.ts'
+import { Router } from 'https://deno.land/x/oak/mod.ts'
 
 import {
   getContacts,
@@ -12,24 +8,15 @@ import {
   deleteContact
 } from '../controllers/contacts.ts'
 
-const router = createRouter()
+const router = new Router()
 
-router.get('/', getContacts)
+const v1 = '/api/v1/contacts'
 
-router.get(new RegExp('/(.{24})'), getContact)
-
-router.post('/', contentTypeFilter('application/json'), createContact)
-
-router.put(
-  new RegExp('/(.{24})'),
-  contentTypeFilter('application/json'),
-  updateContact
-)
-
-router.delete(
-  new RegExp('/(.{24})'),
-  contentTypeFilter('application/json'),
-  deleteContact
-)
+router
+  .get(v1, getContacts)
+  .get(`${v1}/:id`, getContact)
+  .post(v1, createContact)
+  .put(`${v1}/:id`, updateContact)
+  .delete(`${v1}/:id`, deleteContact)
 
 export default router

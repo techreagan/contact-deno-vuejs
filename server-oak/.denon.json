@@ -11,6 +11,7 @@
     "--allow-write",
     "--allow-read",
     "--allow-plugin",
+    "--allow-env",
     "--unstable"
   ],
   "execute": {

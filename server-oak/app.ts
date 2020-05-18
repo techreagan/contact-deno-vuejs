@@ -1,34 +1,16 @@
-import { createApp, RoutingError } from 'https://servestjs.org/@v1.0.0/mod.ts'
+import { Application } from 'https://deno.land/x/oak/mod.ts'
 
 import contactRoutes from './routes/contacts.ts'
 
-const app = createApp()
+const app = new Application()
 
-app.route('/api/v1/contacts', contactRoutes)
+app.use(contactRoutes.routes())
+app.use(contactRoutes.allowedMethods())
 
-// Define global error handler for app
-app.catch(async (e, req) => {
-  if (e instanceof RoutingError && e.status === 404) {
-    try {
-      await req.respond({
-        status: 404,
-        headers: new Headers({
-          'content-type': 'application/json'
-        }),
-        body: JSON.stringify({
-          success: false,
-          data: `Resources not found`
-        })
-      })
-    } finally {
-    }
-  } else {
-    await req.respond({
-      status: 500,
-      body: 'Internal Server Error'
-    })
-  }
-})
-const port = 4002
+const ENV = Deno.env.toObject()
+const PORT = ENV.PORT || 4002
+const HOST = ENV.HOST || '127.0.0.1'
 
-app.listen({ port })
+console.log(`Listening on port ${PORT}`)
+
+await app.listen(`${HOST}:${PORT}`)
