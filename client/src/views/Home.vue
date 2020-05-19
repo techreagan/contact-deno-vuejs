@@ -1,177 +1,189 @@
 <template>
   <div id="home">
     <v-container>
-      <v-dialog v-model="dialog" max-width="500px">
-        <template v-slot:activator="{ on }">
-          <v-btn
-            color="primary"
-            bottom
-            right
-            fab
-            dark
-            fixed
-            class="mb-2"
-            v-on="on"
-            ><v-icon>mdi-plus</v-icon></v-btn
-          >
-        </template>
-        <v-card>
-          <v-card-title>
-            <span class="headline">{{ formTitle }}</span>
-          </v-card-title>
-          <ValidationObserver v-slot="{ handleSubmit, reset }">
-            <form @submit.prevent="handleSubmit(save)" @reset.prevent="reset">
-              <v-card-text class="pt-0">
-                <v-container class="pt-0">
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <ValidationProvider
-                        v-slot="{ errors }"
-                        name="First Name"
-                        rules="required|min:3"
-                      >
-                        <v-text-field
-                          v-model="editedContact.firstName"
-                          :error-messages="errors"
-                          label="First Name"
-                        ></v-text-field>
-                      </ValidationProvider>
-                      <ValidationProvider
-                        v-slot="{ errors }"
-                        name="Last Name"
-                        rules="required|min:3"
-                      >
-                        <v-text-field
-                          v-model="editedContact.lastName"
-                          :error-messages="errors"
-                          label="Last Name"
-                        ></v-text-field>
-                      </ValidationProvider>
-                      <ValidationProvider
-                        v-slot="{ errors }"
-                        name="Phone Number"
-                        rules="required|numeric|min:5"
-                      >
-                        <v-text-field
-                          v-model="editedContact.phoneNumber"
-                          :error-messages="errors"
-                          label="Phone Number"
-                        ></v-text-field>
-                      </ValidationProvider>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn type="reset" color="blue darken-1" text @click="close"
-                  >Cancel</v-btn
+      <v-row>
+        <v-col cols="12" sm="12" md="10" lg="8" class="mx-auto">
+          <v-dialog v-model="dialog" max-width="500px">
+            <template v-slot:activator="{ on }">
+              <v-btn
+                color="primary"
+                bottom
+                right
+                fab
+                dark
+                fixed
+                class="mb-2"
+                v-on="on"
+                ><v-icon>mdi-plus</v-icon></v-btn
+              >
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="headline">{{ formTitle }}</span>
+              </v-card-title>
+              <ValidationObserver v-slot="{ handleSubmit, reset }">
+                <form
+                  ref="form"
+                  @submit.prevent="handleSubmit(save)"
+                  @reset.prevent="reset"
                 >
-                <v-btn
-                  color="blue darken-1 white--text"
-                  :loading="saveBtnLoading"
-                  type="submit"
-                  >Save</v-btn
-                >
-              </v-card-actions>
-            </form>
-          </ValidationObserver>
-        </v-card>
-      </v-dialog>
-      <v-data-table
-        :headers="headers"
-        :items="contacts"
-        :loading="loading"
-        :search="search"
-        no-data-text="No contacts for now"
-        sort-by="firstName"
-        class="elevation-1 mt-6"
-      >
-        <template v-slot:top>
-          <div>
-            <v-toolbar flat color="white">
-              <v-toolbar-title>List</v-toolbar-title>
-
-              <!-- <v-spacer></v-spacer> -->
-              <v-dialog v-model="deleteDialog" persistent max-width="500px">
-                <v-card>
-                  <v-card-title>
-                    <span class="headline"
-                      >Permanently delete this contact?</span
-                    >
-                  </v-card-title>
-
-                  <v-card-text>
-                    <v-container>
-                      <v-card class="card" tile flat>
-                        <!-- <v-row no-gutters> -->
-                        <p>
-                          <strong>First Name: </strong
-                          >{{ contactToDelete.firstName }}
-                        </p>
-                        <p>
-                          <strong>Last Name: </strong
-                          >{{ contactToDelete.lastName }}
-                        </p>
-                        <p>
-                          <strong>Phone Number: </strong
-                          >{{ contactToDelete.phoneNumber }}
-                        </p>
-                        <!-- </v-row> -->
-                      </v-card>
+                  <v-card-text class="pt-0">
+                    <v-container class="pt-0">
+                      <v-row>
+                        <v-col cols="12" sm="12" md="12">
+                          <ValidationProvider
+                            v-slot="{ errors }"
+                            name="First Name"
+                            rules="required|min:3"
+                          >
+                            <v-text-field
+                              v-model="editedContact.firstName"
+                              :error-messages="errors"
+                              label="First Name"
+                            ></v-text-field>
+                          </ValidationProvider>
+                          <ValidationProvider
+                            v-slot="{ errors }"
+                            name="Last Name"
+                            rules="required|min:3"
+                          >
+                            <v-text-field
+                              v-model="editedContact.lastName"
+                              :error-messages="errors"
+                              label="Last Name"
+                            ></v-text-field>
+                          </ValidationProvider>
+                          <ValidationProvider
+                            v-slot="{ errors }"
+                            name="Phone Number"
+                            rules="required|numeric|min:5"
+                          >
+                            <v-text-field
+                              v-model="editedContact.phoneNumber"
+                              :error-messages="errors"
+                              label="Phone Number"
+                            ></v-text-field>
+                          </ValidationProvider>
+                        </v-col>
+                      </v-row>
                     </v-container>
                   </v-card-text>
-
                   <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
+                      type="reset"
                       color="blue darken-1"
                       text
-                      @click="deleteDialog = !deleteDialog"
+                      @click="close"
                       >Cancel</v-btn
                     >
-
                     <v-btn
-                      :loading="deleteBtnLoading"
                       color="blue darken-1 white--text"
-                      @click="deleteContact"
-                      >Delete Forever</v-btn
+                      :loading="saveBtnLoading"
+                      type="submit"
+                      >Save</v-btn
                     >
                   </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </v-toolbar>
-            <v-card-title class="pt-0">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-              ></v-text-field>
-            </v-card-title>
-          </div>
-        </template>
-        <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="editContact(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon small @click="deleteBtn(item)">
-            mdi-delete
-          </v-icon>
-        </template>
-        <!-- <template v-slot:no-data>
+                </form>
+              </ValidationObserver>
+            </v-card>
+          </v-dialog>
+          <v-data-table
+            :headers="headers"
+            :items="contacts"
+            :loading="loading"
+            :search="search"
+            no-data-text="No contacts for now"
+            sort-by="firstName"
+            class="elevation-1 mt-6"
+          >
+            <template v-slot:top>
+              <div>
+                <v-toolbar flat color="white">
+                  <v-toolbar-title>List</v-toolbar-title>
+
+                  <!-- <v-spacer></v-spacer> -->
+                  <v-dialog v-model="deleteDialog" persistent max-width="500px">
+                    <v-card>
+                      <v-card-title>
+                        <span class="headline"
+                          >Permanently delete this contact?</span
+                        >
+                      </v-card-title>
+
+                      <v-card-text>
+                        <v-container>
+                          <v-card class="card" tile flat>
+                            <!-- <v-row no-gutters> -->
+                            <p>
+                              <strong>First Name: </strong
+                              >{{ contactToDelete.firstName }}
+                            </p>
+                            <p>
+                              <strong>Last Name: </strong
+                              >{{ contactToDelete.lastName }}
+                            </p>
+                            <p>
+                              <strong>Phone Number: </strong
+                              >{{ contactToDelete.phoneNumber }}
+                            </p>
+                            <!-- </v-row> -->
+                          </v-card>
+                        </v-container>
+                      </v-card-text>
+
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          color="blue darken-1"
+                          text
+                          @click="deleteDialog = !deleteDialog"
+                          >Cancel</v-btn
+                        >
+
+                        <v-btn
+                          :loading="deleteBtnLoading"
+                          color="blue darken-1 white--text"
+                          @click="deleteContact"
+                          >Delete Forever</v-btn
+                        >
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
+                </v-toolbar>
+                <v-card-title class="pt-0">
+                  <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Search"
+                    single-line
+                    hide-details
+                  ></v-text-field>
+                </v-card-title>
+              </div>
+            </template>
+            <template v-slot:item.actions="{ item }">
+              <v-icon small class="mr-2" @click="editContact(item)">
+                mdi-pencil
+              </v-icon>
+              <v-icon small @click="deleteBtn(item)">
+                mdi-delete
+              </v-icon>
+            </template>
+            <!-- <template v-slot:no-data>
           <v-btn color="primary" @click="initialize">Reset</v-btn>
         </template> -->
-      </v-data-table>
-      <div class="text-center ma-2">
-        <v-snackbar v-model="snackbar">
-          {{ message }}
-          <v-btn color="pink" text @click="snackbar = false">
-            Close
-          </v-btn>
-        </v-snackbar>
-      </div>
+          </v-data-table>
+          <div class="text-center ma-2">
+            <v-snackbar v-model="snackbar">
+              {{ message }}
+              <v-btn color="pink" text @click="snackbar = false">
+                Close
+              </v-btn>
+            </v-snackbar>
+          </div>
+        </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -248,7 +260,7 @@ export default {
           this.loading = false
         })
       if (!contacts) return
-      console.log(contacts.data.data)
+
       this.contacts = contacts.data.data
     },
 
@@ -312,11 +324,16 @@ export default {
           .catch((err) => console.log(err))
           .finally(() => {
             this.saveBtnLoading = false
-            this.contacts.unshift(contact)
+
             this.message = 'Contact created successfully'
             this.snackbar = true
           })
+        if (!contact) return
+        this.contacts.unshift(contact.data.data)
       }
+      this.$nextTick(() => {
+        this.$refs.form.reset()
+      })
       this.close()
     }
   }

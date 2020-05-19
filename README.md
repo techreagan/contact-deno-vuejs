@@ -65,7 +65,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Backend
 
-I developed the API with two deno framework servestjs and oak
+I developed the API with two deno framework servestjs and oak, pick anyone to start the server.
 
 > **Disclaimer!!**: I'm having issues with cors with servestjs, so just use the oak server with the frontend!
 

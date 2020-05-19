@@ -4,7 +4,7 @@ import contactRoutes from './routes/contacts.ts'
 
 const app = new Application()
 
-app.use(async function ({ response }: { response: any }, next) {
+app.use(async ({ response }: { response: any }, next) => {
   response.headers.set('Access-Control-Allow-Origin', '*')
   response.headers.set(
     'Access-Control-Allow-Methods',
