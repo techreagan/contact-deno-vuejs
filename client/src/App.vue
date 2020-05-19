@@ -1,17 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
-      <v-toolbar-title>Contacts</v-toolbar-title>
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        About
-      </v-btn>
-    </v-app-bar>
+    <NavBar />
 
     <v-content>
       <router-view></router-view>
@@ -20,14 +9,14 @@
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld';
+import NavBar from './components/NavBar'
 
 export default {
   name: 'App',
 
-  // components: {
-  //   HelloWorld,
-  // },
+  components: {
+    NavBar
+  },
 
   data: () => ({
     //

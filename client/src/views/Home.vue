@@ -1,9 +1,6 @@
 <template>
   <div id="home">
     <v-container>
-      <!-- <v-btn color="primary" bottom fab right fixed dark class="mb-2" v-on="on"
-        ><v-icon>mdi-plus</v-icon></v-btn
-      > -->
       <v-dialog v-model="dialog" max-width="500px">
         <template v-slot:activator="{ on }">
           <v-btn
@@ -22,100 +19,159 @@
           <v-card-title>
             <span class="headline">{{ formTitle }}</span>
           </v-card-title>
-
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col cols="12" sm="12" md="12">
-                  <v-text-field
-                    v-model="editedItem.firstName"
-                    label="First Name"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="12" md="12">
-                  <v-text-field
-                    v-model="editedItem.lastName"
-                    label="Last Name"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="12" md="12">
-                  <v-text-field
-                    v-model="editedItem.phoneNumber"
-                    label="Phone Number"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-            <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-          </v-card-actions>
+          <ValidationObserver v-slot="{ handleSubmit, reset }">
+            <form @submit.prevent="handleSubmit(save)" @reset.prevent="reset">
+              <v-card-text class="pt-0">
+                <v-container class="pt-0">
+                  <v-row>
+                    <v-col cols="12" sm="12" md="12">
+                      <ValidationProvider
+                        v-slot="{ errors }"
+                        name="First Name"
+                        rules="required|min:3"
+                      >
+                        <v-text-field
+                          v-model="editedContact.firstName"
+                          :error-messages="errors"
+                          label="First Name"
+                        ></v-text-field>
+                      </ValidationProvider>
+                      <ValidationProvider
+                        v-slot="{ errors }"
+                        name="Last Name"
+                        rules="required|min:3"
+                      >
+                        <v-text-field
+                          v-model="editedContact.lastName"
+                          :error-messages="errors"
+                          label="Last Name"
+                        ></v-text-field>
+                      </ValidationProvider>
+                      <ValidationProvider
+                        v-slot="{ errors }"
+                        name="Phone Number"
+                        rules="required|numeric|min:5"
+                      >
+                        <v-text-field
+                          v-model="editedContact.phoneNumber"
+                          :error-messages="errors"
+                          label="Phone Number"
+                        ></v-text-field>
+                      </ValidationProvider>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn type="reset" color="blue darken-1" text @click="close"
+                  >Cancel</v-btn
+                >
+                <v-btn
+                  color="blue darken-1 white--text"
+                  :loading="saveBtnLoading"
+                  type="submit"
+                  >Save</v-btn
+                >
+              </v-card-actions>
+            </form>
+          </ValidationObserver>
         </v-card>
       </v-dialog>
       <v-data-table
         :headers="headers"
         :items="contacts"
         :loading="loading"
-        sort-by="calories"
-        class="elevation-1"
+        :search="search"
+        no-data-text="No contacts for now"
+        sort-by="firstName"
+        class="elevation-1 mt-6"
       >
         <template v-slot:top>
-          <v-toolbar flat color="white">
-            <v-toolbar-title>Contact List</v-toolbar-title>
-            <v-divider class="mx-4" inset vertical></v-divider>
-            <v-spacer></v-spacer>
-            <v-dialog v-model="deleteDialog" persistent max-width="500px">
-              <v-card>
-                <v-card-title>
-                  <span class="headline">Permanently delete this video?</span>
-                </v-card-title>
+          <div>
+            <v-toolbar flat color="white">
+              <v-toolbar-title>List</v-toolbar-title>
 
-                <v-card-text>
-                  <v-container>
-                    <v-card class="card" tile flat>
-                      <v-row no-gutters>
-                        You wanna delete something
-                      </v-row>
-                    </v-card>
-                  </v-container>
-                </v-card-text>
+              <!-- <v-spacer></v-spacer> -->
+              <v-dialog v-model="deleteDialog" persistent max-width="500px">
+                <v-card>
+                  <v-card-title>
+                    <span class="headline"
+                      >Permanently delete this contact?</span
+                    >
+                  </v-card-title>
 
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="deleteDialog = !deleteDialog"
-                    >Cancel</v-btn
-                  >
+                  <v-card-text>
+                    <v-container>
+                      <v-card class="card" tile flat>
+                        <!-- <v-row no-gutters> -->
+                        <p>
+                          <strong>First Name: </strong
+                          >{{ contactToDelete.firstName }}
+                        </p>
+                        <p>
+                          <strong>Last Name: </strong
+                          >{{ contactToDelete.lastName }}
+                        </p>
+                        <p>
+                          <strong>Phone Number: </strong
+                          >{{ contactToDelete.phoneNumber }}
+                        </p>
+                        <!-- </v-row> -->
+                      </v-card>
+                    </v-container>
+                  </v-card-text>
 
-                  <v-btn
-                    :loading="deleteBtnLoading"
-                    color="blue darken-1"
-                    text
-                    @click="deleteItem"
-                    >Delete Forever</v-btn
-                  >
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-toolbar>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="deleteDialog = !deleteDialog"
+                      >Cancel</v-btn
+                    >
+
+                    <v-btn
+                      :loading="deleteBtnLoading"
+                      color="blue darken-1 white--text"
+                      @click="deleteContact"
+                      >Delete Forever</v-btn
+                    >
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-toolbar>
+            <v-card-title class="pt-0">
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+              ></v-text-field>
+            </v-card-title>
+          </div>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="editItem(item)">
+          <v-icon small class="mr-2" @click="editContact(item)">
             mdi-pencil
           </v-icon>
           <v-icon small @click="deleteBtn(item)">
             mdi-delete
           </v-icon>
         </template>
-        <template v-slot:no-data>
+        <!-- <template v-slot:no-data>
           <v-btn color="primary" @click="initialize">Reset</v-btn>
-        </template>
+        </template> -->
       </v-data-table>
+      <div class="text-center ma-2">
+        <v-snackbar v-model="snackbar">
+          {{ message }}
+          <v-btn color="pink" text @click="snackbar = false">
+            Close
+          </v-btn>
+        </v-snackbar>
+      </div>
     </v-container>
   </div>
 </template>
@@ -130,6 +186,9 @@ export default {
     deleteDialog: false,
     loading: false,
     deleteBtnLoading: false,
+    saveBtnLoading: false,
+    snackbar: false,
+    message: '',
     headers: [
       {
         text: 'First Name',
@@ -149,18 +208,19 @@ export default {
       { text: 'Actions', value: 'actions', sortable: false }
     ],
     contacts: [],
+    search: '',
     editedIndex: -1,
-    editedItem: {
+    editedContact: {
       firstName: '',
       lastName: '',
-      phonenumber: 0
+      phoneNumber: ''
     },
-    defaultItem: {
+    defaultContact: {
       firstName: '',
       lastName: '',
-      phonenumber: 0
+      phoneNumber: ''
     },
-    itemToDelete: {}
+    contactToDelete: {}
   }),
 
   computed: {
@@ -186,46 +246,76 @@ export default {
         .catch((err) => console.log(err))
         .finally(() => {
           this.loading = false
-          console.log(contacts)
-          this.contacts = contacts.data
         })
-      // this.contacts = [
-      //   {
-      //     firstName: 'Hello world',
-      //     lastName: 'dddd',
-      //     phoneNumber: 1223434
-      //   }
-      // ]
+      if (!contacts) return
+      console.log(contacts.data.data)
+      this.contacts = contacts.data.data
     },
 
-    editItem(item) {
-      this.editedIndex = this.contacts.indexOf(item)
-      this.editedItem = Object.assign({}, item)
+    editContact(contact) {
+      this.editedIndex = this.contacts.indexOf(contact)
+      this.editedContact = Object.assign({}, contact)
       this.dialog = true
     },
-    deleteBtn(item) {
+    deleteBtn(contact) {
       this.deleteDialog = true
-      this.itemToDelete = item
+      this.contactToDelete = contact
     },
-    deleteItem(item) {
-      const index = this.contacts.indexOf(item)
+    async deleteContact() {
+      this.deleteBtnLoading = true
 
-      this.contacts.splice(index, 1)
+      await ContactService.deleteById(this.contactToDelete._id.$oid)
+        .catch((err) => console.log(err))
+        .finally(() => {
+          this.deleteBtnLoading = false
+          this.contacts = this.contacts.filter(
+            (contact) => this.contactToDelete._id.$oid !== contact._id.$oid
+          )
+          this.message = 'Contact deleted successfully'
+          this.snackbar = true
+        })
+      this.deleteDialog = false
     },
 
     close() {
       this.dialog = false
       this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedContact = Object.assign({}, this.defaultContact)
         this.editedIndex = -1
       })
     },
 
-    save() {
+    async save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.contacts[this.editedIndex], this.editedItem)
+        this.saveBtnLoading = true
+        const { firstName, lastName, phoneNumber } = this.editedContact
+        await ContactService.updateContact(this.editedContact._id.$oid, {
+          firstName,
+          lastName,
+          phoneNumber
+        })
+          .catch((err) => console.log(err))
+          .finally(() => {
+            this.saveBtnLoading = false
+            Object.assign(this.contacts[this.editedIndex], this.editedContact)
+            this.message = 'Contact updated successfully'
+            this.snackbar = true
+          })
       } else {
-        this.contacts.push(this.editedItem)
+        this.saveBtnLoading = true
+        const { firstName, lastName, phoneNumber } = this.editedContact
+        const contact = await ContactService.createContact({
+          firstName,
+          lastName,
+          phoneNumber
+        })
+          .catch((err) => console.log(err))
+          .finally(() => {
+            this.saveBtnLoading = false
+            this.contacts.unshift(contact)
+            this.message = 'Contact created successfully'
+            this.snackbar = true
+          })
       }
       this.close()
     }

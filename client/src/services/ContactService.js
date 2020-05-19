@@ -10,7 +10,7 @@ export default {
   createContact(data) {
     return Api().post('contacts', data)
   },
-  updateUser(data, id) {
+  updateContact(id, data) {
     return Api().put(`contacts/${id}`, data)
   },
   deleteById(id) {

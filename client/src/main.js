@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
-import { required, max, min, oneOf } from 'vee-validate/dist/rules'
+import { required, min, numeric, length } from 'vee-validate/dist/rules'
 import {
   extend,
   ValidationObserver,
@@ -18,18 +18,19 @@ extend('required', {
   message: 'Enter {_field_}'
 })
 
-extend('oneOf', {
-  ...oneOf
-})
-
-extend('max', {
-  ...max,
-  message: '{_field_} may not be greater than {length} characters'
-})
-
 extend('min', {
   ...min,
   message: '{_field_} may not be less than {length} characters'
+})
+
+extend('length', {
+  ...length,
+  message: '{_field_} must be have at least {length} numbers'
+})
+
+extend('numeric', {
+  ...numeric,
+  message: '{_field_} must be numeric'
 })
 
 Vue.config.productionTip = false
