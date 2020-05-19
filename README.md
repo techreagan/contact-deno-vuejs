@@ -33,9 +33,41 @@ Install denon it's like nodemon
 deno install -Af --unstable https://deno.land/x/denon/denon.ts
 ```
 
-## Start web server
+## Frontend - client folder
+
+### Project setup
+
+```
+npm install
+```
+
+### Compiles and hot-reloads for development
+
+```
+npm run serve
+```
+
+### Compiles and minifies for production
+
+```
+npm run build
+```
+
+### Lints and fixes files
+
+```
+npm run lint
+```
+
+### Customize configuration
+
+See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## Backend
 
 I developed the API with two deno framework servestjs and oak
+
+> **Disclaimer!!**: I'm having issues with cors with servestjs, so just use the oak server with the frontend!
 
 ### Start oak server
 
