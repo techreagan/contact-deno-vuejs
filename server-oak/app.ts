@@ -4,6 +4,19 @@ import contactRoutes from './routes/contacts.ts'
 
 const app = new Application()
 
+app.use(async function ({ response }: { response: any }, next) {
+  response.headers.set('Access-Control-Allow-Origin', '*')
+  response.headers.set(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, PATCH, DELETE'
+  )
+  response.headers.set(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
+  await next()
+})
+
 app.use(contactRoutes.routes())
 app.use(contactRoutes.allowedMethods())
 

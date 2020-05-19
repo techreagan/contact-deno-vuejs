@@ -4,6 +4,18 @@ import contactRoutes from './routes/contacts.ts'
 
 const app = createApp()
 
+app.use(async (req) => {
+  req.responseHeaders.set('Access-Control-Allow-Origin', '*')
+  req.responseHeaders.set(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, PATCH, DELETE'
+  )
+  req.responseHeaders.set(
+    'Access-Control-Allow-Headers',
+    'Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization'
+  )
+})
+
 app.route('/api/v1/contacts', contactRoutes)
 
 // Define global error handler for app
